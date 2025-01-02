@@ -56,79 +56,111 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# Sidebar Profile Section
-st.sidebar.image(
-    "https://www.w3schools.com/w3images/avatar2.png", width=150
-)
-st.sidebar.markdown("<div class='sidebar-title'>Your Profile</div>", unsafe_allow_html=True)
-st.sidebar.markdown("<div class='sidebar-text'>Followers: 200K</div>", unsafe_allow_html=True)
-st.sidebar.markdown("<div class='sidebar-text'>Posts: 1,542</div>", unsafe_allow_html=True)
-st.sidebar.markdown("---")
+# Function to display the main dashboard
+def main_dashboard():
+    # Sidebar Profile Section
+    st.sidebar.image(
+        "https://www.w3schools.com/w3images/avatar2.png", width=150
+    )
+    st.sidebar.markdown("<div class='sidebar-title'>Your Profile</div>", unsafe_allow_html=True)
+    st.sidebar.markdown("<div class='sidebar-text'>Followers: 200K</div>", unsafe_allow_html=True)
+    st.sidebar.markdown("<div class='sidebar-text'>Posts: 1,542</div>", unsafe_allow_html=True)
+    st.sidebar.markdown("---")
 
-# Header Section
-st.markdown("<h1>Instagram Dashboard</h1>", unsafe_allow_html=True)
-st.markdown("Visualize your Instagram performance metrics in real-time.")
+    # Header Section
+    st.markdown("<h1>Instagram Dashboard</h1>", unsafe_allow_html=True)
+    st.markdown("Visualize your Instagram performance metrics in real-time.")
 
-# Mock Data for Engagement Metrics
-data = {
-    "Post Type": ["Carousel", "Reels", "Static Image"],
-    "Likes": [1500, 3000, 1000],
-    "Comments": [200, 800, 150],
-    "Shares": [100, 400, 50],
-}
-df = pd.DataFrame(data)
+    # Mock Data for Engagement Metrics
+    data = {
+        "Post Type": ["Carousel", "Reels", "Static Image"],
+        "Likes": [1500, 3000, 1000],
+        "Comments": [200, 800, 150],
+        "Shares": [100, 400, 50],
+    }
+    df = pd.DataFrame(data)
 
-# Metrics Section
-col1, col2, col3, col4 = st.columns(4)
+    # Metrics Section
+    col1, col2, col3, col4 = st.columns(4)
 
-with col1:
-    st.metric("Total Followers", "200K", "+2.5K")
-with col2:
-    st.metric("Total Likes", "1.5M", "-5%")
-with col3:
-    st.metric("Total Comments", "800K", "+12%")
-with col4:
-    st.metric("Total Shares", "120K", "+8%")
+    with col1:
+        st.metric("Total Followers", "200K", "+2.5K")
+    with col2:
+        st.metric("Total Likes", "1.5M", "-5%")
+    with col3:
+        st.metric("Total Comments", "800K", "+12%")
+    with col4:
+        st.metric("Total Shares", "120K", "+8%")
 
-st.markdown("---")
+    st.markdown("---")
 
-# Chart Section
-st.markdown("### Engagement Metrics by Post Type")
-fig = px.bar(
-    df,
-    x="Post Type",
-    y=["Likes", "Comments", "Shares"],
-    barmode="group",
-    title="Engagement Breakdown",
-    color_discrete_sequence=px.colors.qualitative.Bold,
-)
-st.plotly_chart(fig)
+    # Chart Section
+    st.markdown("### Engagement Metrics by Post Type")
+    fig = px.bar(
+        df,
+        x="Post Type",
+        y=["Likes", "Comments", "Shares"],
+        barmode="group",
+        title="Engagement Breakdown",
+        color_discrete_sequence=px.colors.qualitative.Bold,
+    )
+    st.plotly_chart(fig)
 
-# Posts Section with Popular Posts
-st.markdown("### Popular Posts")
-post_images = [
-    "https://www.w3schools.com/w3images/fjords.jpg",
-    "https://www.w3schools.com/w3images/mountains.jpg",
-    "https://www.w3schools.com/w3images/lights.jpg",
-]
+    # Posts Section with Popular Posts
+    st.markdown("### Popular Posts")
+    post_images = [
+        "https://www.w3schools.com/w3images/fjords.jpg",
+        "https://www.w3schools.com/w3images/mountains.jpg",
+        "https://www.w3schools.com/w3images/lights.jpg",
+    ]
 
-col1, col2, col3 = st.columns(3)
-col1.image(post_images[0], caption="Post 1")
-col2.image(post_images[1], caption="Post 2")
-col3.image(post_images[2], caption="Post 3")
+    col1, col2, col3 = st.columns(3)
+    col1.image(post_images[0], caption="Post 1")
+    col2.image(post_images[1], caption="Post 2")
+    col3.image(post_images[2], caption="Post 3")
 
-# Insights Section
-st.markdown("---")
-st.markdown("### Insights")
-insights = [
-    "📊 **Carousel posts** generate higher engagement than static posts.",
-    "🎥 **Reels** drive more comments compared to other formats.",
-    "📈 **Engagement rates** are increasing month-over-month."
-]
-for insight in insights:
-    st.write(insight)
+    # Insights Section
+    st.markdown("---")
+    st.markdown("### Insights")
+    
+    insights = [
+        "📊 **Carousel posts** generate higher engagement than static posts.",
+        "🎥 **Reels** drive more comments compared to other formats.",
+        "📈 **Engagement rates** are increasing month-over-month."
+    ]
+    
+    for insight in insights:
+        st.write(insight)
 
-# Call-To-Action Button
-if st.button('Explore More Insights'):
-    st.write("Redirecting to detailed insights... (This would link to another page or section)")
+    # Call-To-Action Button for Detailed Insights
+    if st.button('Explore More Insights'):
+        st.session_state.page = 'detailed_insights'
 
+# Function to display the detailed insights page
+def detailed_insights():
+    st.markdown("<h1>Detailed Insights</h1>", unsafe_allow_html=True)
+    
+    detailed_data = {
+        "Metric": ["Follower Growth", "Engagement Rate", "Top Post Likes"],
+        "Value": ["+5K (Last Month)", "4.5%", "3000 (Reels)"]
+    }
+    
+    df_detailed = pd.DataFrame(detailed_data)
+
+    st.write("### Key Metrics Overview")
+    
+    for index, row in df_detailed.iterrows():
+        st.write(f"**{row['Metric']}:** {row['Value']}")
+
+    st.markdown("---")
+    
+    # Add more detailed analysis or charts here if needed.
+    
+# Main logic to switch between pages based on session state
+if 'page' not in st.session_state:
+    st.session_state.page = 'main_dashboard'
+
+if st.session_state.page == 'main_dashboard':
+    main_dashboard()
+else:
+    detailed_insights()
