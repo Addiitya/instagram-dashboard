@@ -16,7 +16,6 @@ st.markdown(
             font-family: 'Arial', sans-serif;
             background-color: #fafafa;
             color: #333;
-            transition: all 0.3s ease-in-out;
         }
         h1, h2, h3 {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -30,7 +29,6 @@ st.markdown(
             border-right: 2px solid #eaeaea;
             box-shadow: 4px 0px 6px rgba(0, 0, 0, 0.1);
             padding: 30px 15px;
-            transition: all 0.3s ease;
         }
 
         .sidebar-title {
@@ -38,16 +36,8 @@ st.markdown(
             margin-bottom: 20px;
             color: #333;
             font-weight: bold;
-            transition: all 0.3s ease;
         }
 
-        .sidebar-text {
-            font-size: 1em;
-            color: #555;
-            margin: 5px 0;
-        }
-
-        /* Metric Cards */
         .metric-container {
             background: #ffffff;
             border-radius: 12px;
@@ -55,66 +45,11 @@ st.markdown(
             padding: 20px;
             text-align: center;
             margin: 15px;
-            cursor: pointer;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            color: #000; /* Black text color */
-        }
-        .metric-container:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
         }
 
-        /* Chart Section */
-        .chart-container {
-            background: #fff;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-            transition: all 0.3s ease;
-        }
-
-        /* Images Section */
         img {
             border-radius: 12px;
             max-width: 100%;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Buttons */
-        .stButton>button {
-            background-color: #4CAF50;
-            color: white;
-            font-size: 16px;
-            border-radius: 8px;
-            padding: 10px 20px;
-            border: none;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        .stButton>button:hover {
-            background-color: #45a049;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .metric-container {
-                width: 100%;
-                margin: 10px 0;
-            }
-            .sidebar-title {
-                font-size: 1.2em;
-            }
-        }
-
-        /* Animations */
-        @keyframes fadeIn {
-            0% { opacity: 0; }
-            100% { opacity: 1; }
-        }
-
-        .fade-in {
-            animation: fadeIn 1s ease-in-out;
         }
     </style>
     """,
@@ -123,18 +58,18 @@ st.markdown(
 
 # Sidebar Profile Section
 st.sidebar.image(
-    "https://www.w3schools.com/w3images/avatar2.png", width=150  # Example profile image
+    "https://www.w3schools.com/w3images/avatar2.png", width=150
 )
 st.sidebar.markdown("<div class='sidebar-title'>Your Profile</div>", unsafe_allow_html=True)
 st.sidebar.markdown("<div class='sidebar-text'>Followers: 200K</div>", unsafe_allow_html=True)
 st.sidebar.markdown("<div class='sidebar-text'>Posts: 1,542</div>", unsafe_allow_html=True)
 st.sidebar.markdown("---")
 
-# Header Section with smooth animation
-st.markdown("<h1 class='fade-in'>Instagram Dashboard</h1>", unsafe_allow_html=True)
+# Header Section
+st.markdown("<h1>Instagram Dashboard</h1>", unsafe_allow_html=True)
 st.markdown("Visualize your Instagram performance metrics in real-time.")
 
-# Mock Data
+# Mock Data for Engagement Metrics
 data = {
     "Post Type": ["Carousel", "Reels", "Static Image"],
     "Likes": [1500, 3000, 1000],
@@ -143,21 +78,21 @@ data = {
 }
 df = pd.DataFrame(data)
 
-# Metrics Section with hover animation
+# Metrics Section
 col1, col2, col3, col4 = st.columns(4)
 
 with col1:
-    st.markdown(f"<div class='metric-container'><h3>Total Followers</h3><p>200K</p><p>+2.5K</p></div>", unsafe_allow_html=True)
+    st.metric("Total Followers", "200K", "+2.5K")
 with col2:
-    st.markdown(f"<div class='metric-container'><h3>Total Likes</h3><p>1.5M</p><p>-5%</p></div>", unsafe_allow_html=True)
+    st.metric("Total Likes", "1.5M", "-5%")
 with col3:
-    st.markdown(f"<div class='metric-container'><h3>Total Comments</h3><p>800K</p><p>+12%</p></div>", unsafe_allow_html=True)
+    st.metric("Total Comments", "800K", "+12%")
 with col4:
-    st.markdown(f"<div class='metric-container'><h3>Total Shares</h3><p>120K</p><p>+8%</p></div>", unsafe_allow_html=True)
+    st.metric("Total Shares", "120K", "+8%")
 
 st.markdown("---")
 
-# Chart Section with more dynamic visuals
+# Chart Section
 st.markdown("### Engagement Metrics by Post Type")
 fig = px.bar(
     df,
@@ -166,16 +101,15 @@ fig = px.bar(
     barmode="group",
     title="Engagement Breakdown",
     color_discrete_sequence=px.colors.qualitative.Bold,
-    height=400
 )
-st.plotly_chart(fig, use_container_width=True)
+st.plotly_chart(fig)
 
-# Posts Section with hover animation
+# Posts Section with Popular Posts
 st.markdown("### Popular Posts")
 post_images = [
-    "https://www.w3schools.com/w3images/fjords.jpg",  # Example post image 1
-    "https://www.w3schools.com/w3images/mountains.jpg",  # Example post image 2
-    "https://www.w3schools.com/w3images/lights.jpg",  # Example post image 3
+    "https://www.w3schools.com/w3images/fjords.jpg",
+    "https://www.w3schools.com/w3images/mountains.jpg",
+    "https://www.w3schools.com/w3images/lights.jpg",
 ]
 
 col1, col2, col3 = st.columns(3)
@@ -183,12 +117,18 @@ col1.image(post_images[0], caption="Post 1")
 col2.image(post_images[1], caption="Post 2")
 col3.image(post_images[2], caption="Post 3")
 
-# Insights Section with more engaging styling
+# Insights Section
 st.markdown("---")
 st.markdown("### Insights")
-st.write("📊 **Carousel posts** generate 20% higher engagement than static posts.")
-st.write("🎥 **Reels** drive 2x more comments compared to other formats.")
-st.write("📈 **Engagement rates** are increasing month-over-month.")
+insights = [
+    "📊 **Carousel posts** generate higher engagement than static posts.",
+    "🎥 **Reels** drive more comments compared to other formats.",
+    "📈 **Engagement rates** are increasing month-over-month."
+]
+for insight in insights:
+    st.write(insight)
 
-# CTA Button with interaction animation
-st.markdown("<div class='stButton'><button>Explore More Insights</button></div>", unsafe_allow_html=True)
+# Call-To-Action Button
+if st.button('Explore More Insights'):
+    st.write("Redirecting to detailed insights... (This would link to another page or section)")
+
