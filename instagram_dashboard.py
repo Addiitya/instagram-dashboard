@@ -1,166 +1,91 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import matplotlib.pyplot as plt
+import seaborn as sns
+import time
+import requests
 
-# Set page config
-st.set_page_config(page_title="Instagram Dashboard", layout="wide")
+# --- Sample Data (Replace with API Data) ---
+# ... (Sample data for interactions, views, followers as before) ...
 
-# Embed advanced CSS for Instagram-like styling
+# --- Styling ---
+st.set_page_config(page_title="Instagram Insights", layout="wide")
+
 st.markdown(
     """
     <style>
-        /* Global Styling */
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Arial', sans-serif;
-            background-color: #fafafa;
-            color: #333;
+        .stApp {
+            background-color: #181818; /* Dark background */
         }
-        h1, h2, h3 {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: #2C3E50;
+        .st-h1 {
+            color: #fff;
         }
-
-        /* Sidebar Styling */
-        [data-testid="stSidebar"] {
-            background-color: #fff;
-            width: 300px;
-            border-right: 2px solid #eaeaea;
-            box-shadow: 4px 0px 6px rgba(0, 0, 0, 0.1);
-            padding: 30px 15px;
+        .st-h2 {
+            color: #fff;
         }
-
-        .sidebar-title {
-            font-size: 1.6em;
-            margin-bottom: 20px;
-            color: #333;
-            font-weight: bold;
-        }
-
-        .metric-container {
-            background: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            text-align: center;
-            margin: 15px;
-        }
-
-        img {
-            border-radius: 12px;
-            max-width: 100%;
+        .st-text {
+            color: #fff;
         }
     </style>
     """,
-    unsafe_allow_html=True,
+    unsafe_allow_html=True
 )
 
-# Function to display the main dashboard
-def main_dashboard():
-    # Sidebar Profile Section
-    st.sidebar.image(
-        "https://www.w3schools.com/w3images/avatar2.png", width=150
-    )
-    st.sidebar.markdown("<div class='sidebar-title'>Your Profile</div>", unsafe_allow_html=True)
-    st.sidebar.markdown("<div class='sidebar-text'>Followers: 200K</div>", unsafe_allow_html=True)
-    st.sidebar.markdown("<div class='sidebar-text'>Posts: 1,542</div>", unsafe_allow_html=True)
-    st.sidebar.markdown("---")
+# --- Page Navigation ---
 
-    # Header Section
-    st.markdown("<h1>Instagram Dashboard</h1>", unsafe_allow_html=True)
-    st.markdown("Visualize your Instagram performance metrics in real-time.")
+if 'page' not in st.session_state:
+    st.session_state.page = "Overview"
 
-    # Mock Data for Engagement Metrics
-    data = {
-        "Post Type": ["Carousel", "Reels", "Static Image"],
-        "Likes": [1500, 3000, 1000],
-        "Comments": [200, 800, 150],
-        "Shares": [100, 400, 50],
-    }
-    df = pd.DataFrame(data)
+pages = ["Overview", "Audience", "Content", "Activity"]
+selected_page = st.sidebar.selectbox("Select Page", pages)
+st.session_state.page = selected_page
 
-    # Metrics Section
-    col1, col2, col3, col4 = st.columns(4)
+# --- Dashboard Layout ---
 
+if st.session_state.page == "Overview":
+    st.header("Overview")
+    col1, col2 = st.columns(2)
     with col1:
-        st.metric("Total Followers", "200K", "+2.5K")
+        st.metric("Account Reached", "1,771")
+        st.metric("Impressions", "5,685")  # Replace with actual data
     with col2:
-        st.metric("Total Likes", "1.5M", "-5%")
-    with col3:
-        st.metric("Total Comments", "800K", "+12%")
-    with col4:
-        st.metric("Total Shares", "120K", "+8%")
+        st.metric("Profile Visits", 399)
+        st.metric("Website Clicks", 10)  # Replace with actual data
 
-    st.markdown("---")
-
-    # Chart Section
-    st.markdown("### Engagement Metrics by Post Type")
-    fig = px.bar(
-        df,
-        x="Post Type",
-        y=["Likes", "Comments", "Shares"],
-        barmode="group",
-        title="Engagement Breakdown",
-        color_discrete_sequence=px.colors.qualitative.Bold,
-    )
+elif st.session_state.page == "Audience":
+    st.header("Audience")
+    st.subheader("Top Countries")
+    # ... (Code to fetch and display top countries) ...
+    st.subheader("Most Active Times")
+    fig = px.line(df_follower_activity, x="Hour", y="Followers", title="Follower Activity by Hour")
     st.plotly_chart(fig)
 
-    # Posts Section with Popular Posts
-    st.markdown("### Popular Posts")
-    post_images = [
-        "https://www.w3schools.com/w3images/fjords.jpg",
-        "https://www.w3schools.com/w3images/mountains.jpg",
-        "https://www.w3schools.com/w3images/lights.jpg",
-    ]
+elif st.session_state.page == "Content":
+    st.header("Content")
+    st.subheader("Interactions by Content Type")
+    fig = px.bar(df_interactions, x="Content Type", y="Interactions", title="Interactions by Content Type")
+    st.plotly_chart(fig)
+    st.subheader("Views by Content Type")
+    fig = px.bar(df_views, x="Content Type", y="Views", title="Views by Content Type")
+    st.plotly_chart(fig)
 
-    col1, col2, col3 = st.columns(3)
-    col1.image(post_images[0], caption="Post 1")
-    col2.image(post_images[1], caption="Post 2")
-    col3.image(post_images[2], caption="Post 3")
+elif st.session_state.page == "Activity":
+    st.header("Activity")
+    # ... (Code to display recent activity - posts, stories, reels) ...
 
-    # Insights Section
-    st.markdown("---")
-    st.markdown("### Insights")
-    
-    insights = [
-        "📊 **Carousel posts** generate higher engagement than static posts.",
-        "🎥 **Reels** drive more comments compared to other formats.",
-        "📈 **Engagement rates** are increasing month-over-month."
-    ]
-    
-    for insight in insights:
-        st.write(insight)
+# --- Placeholder for Data Fetching (Replace with API Calls) ---
 
-    # Call-To-Action Button for Detailed Insights
-    if st.button('Explore More Insights'):
-        st.session_state.page = 'detailed_insights'
+# --- Example: Fetching Top Countries (Replace with actual API call) ---
+# (Note: This is a simplified example)
+def fetch_top_countries():
+    try:
+        response = requests.get("https://api.example.com/top_countries")  # Replace with actual API endpoint
+        response.raise_for_status()  # Raise an exception for bad status codes
+        data = response.json()
+        return data
+    except requests.exceptions.RequestException as e:
+        st.error(f"Error fetching top countries: {e}")
+        return None
 
-# Function to display the detailed insights page
-def detailed_insights():
-    st.markdown("<h1>Detailed Insights</h1>", unsafe_allow_html=True)
-    
-    detailed_data = {
-        "Metric": ["Follower Growth", "Engagement Rate", "Top Post Likes"],
-        "Value": ["+5K (Last Month)", "4.5%", "3000 (Reels)"]
-    }
-    
-    df_detailed = pd.DataFrame(detailed_data)
-
-    st.write("### Key Metrics Overview")
-    
-    for index, row in df_detailed.iterrows():
-        st.write(f"**{row['Metric']}:** {row['Value']}")
-
-    st.markdown("---")
-    
-    # Add more detailed analysis or charts here if needed.
-    
-# Main logic to switch between pages based on session state
-if 'page' not in st.session_state:
-    st.session_state.page = 'main_dashboard'
-
-if st.session_state.page == 'main_dashboard':
-    main_dashboard()
-else:
-    detailed_insights()
+# --- End of App ---
