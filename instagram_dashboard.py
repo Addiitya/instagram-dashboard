@@ -1,24 +1,8 @@
 import streamlit as st
-from langflow import Flow, DataStaxQueryNode, GPTNode, PlotlyChartNode
-from langflow.nodes.llm import LLMNode
-from langflow.utils import load_yaml
 import pandas as pd
 import plotly.express as px
 import requests
 import time
-import logging
-import json
-
-# --- Configuration ---
-try:
-    with open("config.yaml", "r") as f:
-        config = yaml.safe_load(f) 
-except FileNotFoundError:
-    st.error("config.yaml not found. Please create a config.yaml file with your credentials.")
-    st.stop()
-
-# --- Logging Setup ---
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # --- Styling ---
 st.set_page_config(page_title="Instagram Insights", layout="wide")
@@ -43,46 +27,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# --- Langflow Flow ---
-
-def build_flow(post_type):
-    """
-    Constructs the Langflow workflow for the given post type.
-
-    Args:
-        post_type: The type of post (e.g., "carousel", "reel", "image")
-
-    Returns:
-        The constructed Langflow Flow object.
-    """
-    flow = Flow()
-
-    # DataStax Query Node
-    data_stax_node = DataStaxQueryNode(
-        config=config["datastax"], 
-        query=f"SELECT post_type, AVG(likes), AVG(comments), AVG(shares) FROM social_media_posts WHERE post_type = '{post_type}' GROUP BY post_type"
-    )
-    flow.add_node(data_stax_node)
-
-    # GPT Node
-    gpt_node = GPTNode(
-        model_name="text-davinci-003", 
-        prompt_template="""
-        Given the following data: 
-        {data}
-
-        Generate concise and informative insights about the engagement of this post type. 
-        Focus on comparisons and key takeaways. 
-        """
-    )
-    flow.add_node(gpt_node)
-
-    # Connect nodes
-    flow.connect(data_stax_node, gpt_node, input_key="data")
-
-    return flow
-
-# --- Streamlit App ---
+# --- Page Navigation ---
 
 if 'page' not in st.session_state:
     st.session_state.page = "Overview"
@@ -116,33 +61,47 @@ elif st.session_state.page == "Audience":
     else:
         st.warning("Failed to fetch top countries data.")
     st.subheader("Most Active Times")
+    # Sample follower activity data
+    follower_activity_data = {
+        "Hour": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
+        "Followers": [140, 149, 160, 125, 41, 32, 101, 140, 140, 120, 110, 90, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190]
+    }
+    df_follower_activity = pd.DataFrame(follower_activity_data)
     fig = px.line(df_follower_activity, x="Hour", y="Followers", title="Follower Activity by Hour")
     st.plotly_chart(fig)
 
 elif st.session_state.page == "Content":
     st.header("Content")
-    st.subheader("Engagement by Post Type")
-    post_types = ["carousel", "reel", "image"] 
-    for post_type in post_types:
-        try:
-            flow = build_flow(post_type)
-            result = flow.run()
-            st.write(f"**{post_type}**: {result['gpt_output']}")
-        except Exception as e:
-            st.error(f"Error processing {post_type}: {e}")
-            logging.error(f"Error processing {post_type}: {e}") 
+    st.subheader("Interactions by Content Type")
+    # Sample interaction data
+    interaction_data = {
+        "Content Type": ["Reels", "Stories", "Posts"],
+        "Interactions": [54.5, 40.9, 4.5]
+    }
+    df_interactions = pd.DataFrame(interaction_data)
+    fig = px.bar(df_interactions, x="Content Type", y="Interactions", title="Interactions by Content Type")
+    st.plotly_chart(fig)
+    st.subheader("Views by Content Type")
+    # Sample view data
+    view_data = {
+        "Content Type": ["Stories", "Posts", "Reels"],
+        "Views": [87.0, 7.7, 5.4]
+    }
+    df_views = pd.DataFrame(view_data)
+    fig = px.bar(df_views, x="Content Type", y="Views", title="Views by Content Type")
+    st.plotly_chart(fig)
 
 elif st.session_state.page == "Activity":
     st.header("Activity")
-    # Fetch recent activity data (replace with actual API call)
-    recent_activity_data = fetch_recent_activity() 
-    if recent_activity_data:
-        # Example: Display recent posts (replace with actual data handling)
-        st.subheader("Recent Posts")
-        for post in recent_activity_data['posts']:
-            st.write(f"- {post['text']}") 
-    else:
-        st.warning("Failed to fetch recent activity data.")
+    # Sample recent activity data
+    recent_activity_data = [
+        {"text": "Post 1"},
+        {"text": "Post 2"},
+        {"text": "Post 3"}
+    ]
+    st.subheader("Recent Posts")
+    for post in recent_activity_data:
+        st.write(f"- {post['text']}")
 
 # --- Placeholder for Data Fetching (Replace with API Calls) ---
 
@@ -157,21 +116,6 @@ def fetch_top_countries():
         return data['data']  # Adjust based on the API response structure
     except requests.exceptions.RequestException as e:
         st.error(f"Error fetching top countries: {e}")
-        logging.error(f"Error fetching top countries: {e}")
-        return None
-
-# --- Example: Fetching Recent Activity (Replace with actual API call) ---
-def fetch_recent_activity():
-    try:
-        # Replace with actual API endpoint and authentication
-        response = requests.get("https://api.instagram.com/v1/your_data_endpoint", 
-                                headers={"Authorization": f"Bearer {YOUR_ACCESS_TOKEN}"}) 
-        response.raise_for_status()  # Raise an exception for bad status codes
-        data = response.json()
-        return data['data']  # Adjust based on the API response structure
-    except requests.exceptions.RequestException as e:
-        st.error(f"Error fetching recent activity: {e}")
-        logging.error(f"Error fetching recent activity: {e}")
         return None
 
 # --- Run App ---
